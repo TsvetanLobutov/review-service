@@ -67,3 +67,63 @@ This project was a deep dive into distributed systems and cloud-native developme
     ```bash
     git clone https://github.com/TsvetanLobutov/shop-frontend.git
     cd shop-infrastructure
+
+    Start the infrastructure (Databases & Kafka):
+
+**2. Start Minikube**
+ 
+```bash
+minikube start
+```
+ 
+**3. Start the infrastructure (databases and Kafka)**
+ 
+```bash
+kubectl apply -f k8s/infrastructure.yaml
+```
+ 
+**4. Deploy the microservices**
+ 
+```bash
+kubectl apply -f k8s/services.yaml
+```
+ 
+**5. Deploy the frontend**
+ 
+```bash
+kubectl apply -f k8s/frontend.yaml
+```
+ 
+**6. Open the app**
+ 
+```bash
+minikube service shop-frontend
+```
+ 
+---
+ 
+## 🛠️ Troubleshooting
+ 
+**Kafka starts but nothing can connect (`Connection to node -1 could not be established`)**
+ 
+When running Kafka in KRaft mode inside a single pod, the controller quorum must point to `localhost`, not to the Kubernetes Service:
+ 
+```yaml
+- name: KAFKA_CONTROLLER_QUORUM_VOTERS
+  value: "1@localhost:9093"
+```
+ 
+Make sure this variable appears only once in the Kafka deployment. After Kafka logs `Kafka Server started`, restart the order service:
+ 
+```bash
+kubectl rollout restart deployment order-service
+```
+ 
+---
+ 
+## 👤 Author
+ 
+**Tsvetan Lobutov**
+ 
+- [GitHub Profile](https://github.com/TsvetanLobutov)
+- Full-Stack Microservices Developer
